@@ -57,6 +57,7 @@ import {
 
 type SectionKey =
   | 'executive'
+  | 'roadmap'
   | 'rfp'
   | 'assembly'
   | 'staffing'
@@ -71,6 +72,7 @@ const today = new Date('2026-05-21T12:00:00')
 
 const navigation: { id: SectionKey; label: string; icon: LucideIcon }[] = [
   { id: 'executive', label: 'Executive Command Center', icon: LayoutDashboard },
+  { id: 'roadmap', label: 'Enterprise Build Checklist', icon: ClipboardCheck },
   { id: 'rfp', label: 'RFP Intelligence Workspace', icon: FileSearch },
   { id: 'assembly', label: 'Proposal Assembly Room', icon: FileStack },
   { id: 'staffing', label: 'Resume & Staffing Intelligence', icon: Users },
@@ -84,6 +86,7 @@ const navigation: { id: SectionKey; label: string; icon: LucideIcon }[] = [
 
 const subtitles: Record<SectionKey, string> = {
   executive: 'Leadership visibility across pursuits, risk, value, staffing, compliance, and marketing readiness.',
+  roadmap: 'The live path from polished prototype to enterprise-grade DACK proposal operating system.',
   rfp: 'A working RFP review environment that converts requirements into actions, gaps, team recommendations, and proposal structure.',
   assembly: 'A visual proposal builder that shows reusable content, current outline readiness, owners, and section-level recommendations.',
   staffing: 'Staffing fit, resume usage, certification risk, and teaming participation in one operating view.',
@@ -94,6 +97,85 @@ const subtitles: Record<SectionKey, string> = {
   actions: 'Prioritized action center with owners, due dates, recommended actions, and related records.',
   activation: 'Working data model and file checklist for replacing sample data with DACK’s real materials.',
 }
+
+type BuildItem = {
+  label: string
+  status: 'Done' | 'Now' | 'Next' | 'Later'
+  owner: string
+}
+
+type BuildPhase = {
+  title: string
+  outcome: string
+  items: BuildItem[]
+}
+
+const enterpriseBuildPhases: BuildPhase[] = [
+  {
+    title: 'Foundation',
+    outcome: 'A real Next.js product shell with visible project memory and build rules.',
+    items: [
+      { label: 'Next.js app router foundation', status: 'Done', owner: 'Platform' },
+      { label: 'Modern DACK command center UI', status: 'Done', owner: 'Product' },
+      { label: 'DACK skill with requirements, decisions, checklist, and rules', status: 'Done', owner: 'Platform' },
+      { label: 'Repo implementation checklist', status: 'Done', owner: 'Product' },
+    ],
+  },
+  {
+    title: 'Enterprise Data Backbone',
+    outcome: 'Payload, Postgres, tenant boundaries, collections, and admin control room.',
+    items: [
+      { label: 'Install and configure Payload', status: 'Now', owner: 'Platform' },
+      { label: 'Configure Postgres adapter and environment', status: 'Now', owner: 'Platform' },
+      { label: 'Create /admin and Payload route group', status: 'Now', owner: 'Platform' },
+      { label: 'Define Organizations, Users, Agencies, Proposals, RFPs, Documents', status: 'Next', owner: 'Platform' },
+      { label: 'Define Staff, Resumes, Projects, Rates, Subconsultants, Certifications', status: 'Next', owner: 'Platform' },
+    ],
+  },
+  {
+    title: 'Governance and Permissions',
+    outcome: 'No sensitive rates, contracts, or financial documents leak to the wrong people.',
+    items: [
+      { label: 'Admin, Proposal Manager, Contributor, Viewer roles', status: 'Next', owner: 'Security' },
+      { label: 'Finance-sensitive rate access', status: 'Next', owner: 'Security' },
+      { label: 'Tenant scoping on major collections', status: 'Next', owner: 'Security' },
+      { label: 'Audit events for sensitive actions', status: 'Next', owner: 'Security' },
+    ],
+  },
+  {
+    title: 'RFP Intelligence',
+    outcome: 'Upload RFPs, extract requirements, cite sources, and force human review.',
+    items: [
+      { label: 'RFP upload and original document storage', status: 'Next', owner: 'AI' },
+      { label: 'Text extraction and document parsing queue', status: 'Next', owner: 'AI' },
+      { label: 'Requirement, deadline, form, criteria extraction', status: 'Later', owner: 'AI' },
+      { label: 'Citation/source storage', status: 'Later', owner: 'AI' },
+      { label: 'Strong / Partial / No evidence states', status: 'Later', owner: 'AI' },
+    ],
+  },
+  {
+    title: 'Proposal Operating System',
+    outcome: 'DACK-specific workspace for resumes, project sheets, rates, subs, templates, and proposal assembly.',
+    items: [
+      { label: 'Resume and project sheet libraries', status: 'Later', owner: 'Product' },
+      { label: 'Subconsultant quota tracking', status: 'Later', owner: 'Product' },
+      { label: 'Rate management with restricted views', status: 'Later', owner: 'Finance' },
+      { label: 'Content library and agency templates', status: 'Later', owner: 'Product' },
+      { label: 'Section-based proposal builder', status: 'Later', owner: 'Product' },
+    ],
+  },
+  {
+    title: 'Production Readiness',
+    outcome: 'Reliable enterprise deployment with monitoring, backup, export, and recovery.',
+    items: [
+      { label: 'Background jobs for AI, ingestion, and batch exports', status: 'Later', owner: 'Ops' },
+      { label: 'Logs, metrics, and alerting', status: 'Later', owner: 'Ops' },
+      { label: 'Backup and restore procedure', status: 'Later', owner: 'Ops' },
+      { label: 'Word/PDF export after templates stabilize', status: 'Later', owner: 'Product' },
+      { label: 'Website readiness alerts for project sheets', status: 'Later', owner: 'Marketing' },
+    ],
+  },
+]
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-US', {
@@ -264,6 +346,93 @@ function ExecutiveCommandCenter() {
             proposal.awardedValue ? formatFullCurrency(proposal.awardedValue) : 'Pending',
           ])}
         />
+      </section>
+    </div>
+  )
+}
+
+function EnterpriseBuildChecklist() {
+  const allItems = enterpriseBuildPhases.flatMap((phase) => phase.items)
+  const done = allItems.filter((item) => item.status === 'Done').length
+  const now = allItems.filter((item) => item.status === 'Now').length
+  const next = allItems.filter((item) => item.status === 'Next').length
+  const later = allItems.filter((item) => item.status === 'Later').length
+  const progress = Math.round((done / allItems.length) * 100)
+  const activePhase = enterpriseBuildPhases.find((phase) => phase.items.some((item) => item.status === 'Now'))
+
+  return (
+    <div className="section-stack">
+      <section className="card build-hero">
+        <div>
+          <span className="eyebrow">Enterprise path</span>
+          <h2>No-bullshit checklist to finished product</h2>
+          <p>
+            This is the operating scoreboard: foundation first, AI second, export third. Every checked item should represent something real,
+            verified, and useful to DACK.
+          </p>
+        </div>
+        <div className="build-progress">
+          <strong>{progress}%</strong>
+          <span>foundation progress</span>
+        </div>
+      </section>
+
+      <div className="metrics-grid roadmap-metrics">
+        <MetricCard icon={CheckCircle2} label="Done" value={done} note="Completed and verified" tone="green" />
+        <MetricCard icon={ClipboardCheck} label="In Motion" value={now} note={activePhase ? activePhase.title : 'Ready to choose'} tone="blue" />
+        <MetricCard icon={FileStack} label="Next Up" value={next} note="Near-term build scope" tone="amber" />
+        <MetricCard icon={ShieldAlert} label="Enterprise Gates" value={4} note="RBAC, audit, tenants, backups" tone="red" />
+        <MetricCard icon={Globe2} label="Later" value={later} note="Phase-gated, not forgotten" />
+      </div>
+
+      <section className="card">
+        <CardHeader eyebrow="Phase Gates" title="Build Sequence We Are Holding Ourselves To" action={<Badge tone="Working Data Model">Live Checklist</Badge>} />
+        <div className="phase-roadmap">
+          {enterpriseBuildPhases.map((phase, index) => {
+            const phaseDone = phase.items.filter((item) => item.status === 'Done').length
+            const phaseProgress = Math.round((phaseDone / phase.items.length) * 100)
+
+            return (
+              <article className="phase-card" key={phase.title}>
+                <div className="phase-number">{index + 1}</div>
+                <div className="phase-content">
+                  <div className="phase-head">
+                    <div>
+                      <h3>{phase.title}</h3>
+                      <p>{phase.outcome}</p>
+                    </div>
+                    <Badge tone={phaseProgress === 100 ? 'Complete' : phase.items.some((item) => item.status === 'Now') ? 'In Progress' : 'Needs Review'}>
+                      {phaseProgress}% complete
+                    </Badge>
+                  </div>
+                  <div className="score-track"><span style={{ width: `${phaseProgress}%` }} /></div>
+                  <div className="build-list">
+                    {phase.items.map((item) => (
+                      <article className={`build-item ${slug(item.status)}`} key={item.label}>
+                        <span className="build-check">{item.status === 'Done' ? 'OK' : item.status === 'Now' ? 'GO' : ''}</span>
+                        <div>
+                          <strong>{item.label}</strong>
+                          <span>{item.owner}</span>
+                        </div>
+                        <Badge tone={item.status}>{item.status}</Badge>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="card">
+        <CardHeader eyebrow="Rules" title="Enterprise Grade Means These Cannot Be Faked" />
+        <div className="rule-grid">
+          <Panel title="Data Foundation" items={['Real Payload collections replace prototype data.', 'Every major record is tenant-scoped.', 'Payload admin is the data control room, not the main UX.']} />
+          <Panel title="Security" items={['Rates and contracts are restricted from day one.', 'RBAC is required before live client data.', 'Sensitive actions create audit events.']} emphasis />
+          <Panel title="AI" items={['AI outputs require citations.', 'Human review is mandatory before confirmation.', 'Use Strong / Partial / No evidence states.']} />
+          <Panel title="Operations" items={['Background jobs handle heavy work.', 'Logs, metrics, backups, and restore checks are production requirements.', 'Export waits until templates and data model are stable.']} />
+        </div>
       </section>
     </div>
   )
@@ -796,7 +965,7 @@ function DataTable({ headers, rows }: { headers: string[]; rows: ReactNode[][] }
 }
 
 export default function CommandCenter() {
-  const [activeSection, setActiveSection] = useState<SectionKey>('executive')
+  const [activeSection, setActiveSection] = useState<SectionKey>('roadmap')
   const activeNav = useMemo(
     () => navigation.find((item) => item.id === activeSection) ?? navigation[0],
     [activeSection],
@@ -858,6 +1027,7 @@ export default function CommandCenter() {
 
         <div className="content">
           {activeSection === 'executive' && <ExecutiveCommandCenter />}
+          {activeSection === 'roadmap' && <EnterpriseBuildChecklist />}
           {activeSection === 'rfp' && <RfpWorkspace />}
           {activeSection === 'assembly' && <ProposalAssemblyRoom />}
           {activeSection === 'staffing' && <StaffingIntelligence />}

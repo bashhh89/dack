@@ -7,6 +7,7 @@
 - [x] Store current architecture decisions in the skill.
 - [x] Store live implementation checklist in the skill.
 - [x] Store DACK delivery rules in the skill.
+- [x] Add visible enterprise build checklist to the command center.
 - [ ] Keep skill references updated after major DACK decisions.
 
 ## 1. Core Architecture and Platform
