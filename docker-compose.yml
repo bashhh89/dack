@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dack-proposal-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dack_proposal_command_center
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "55432:5432"
+    volumes:
+      - dack_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  dack_postgres_data:

@@ -21,10 +21,27 @@ The current application uses sample data from `src/data/dummyData.ts`. The UI an
 
 ```bash
 npm install
+npm run payload:importmap
+npm run payload:types
 npm run lint
 npm run build
 npm run dev -- --hostname 0.0.0.0
 ```
+
+Payload admin runs at:
+
+```bash
+http://localhost:3000/admin
+```
+
+For local Payload development, start Postgres first:
+
+```bash
+docker compose up -d postgres
+cp .env.example .env.local
+```
+
+The local Postgres container is exposed on host port `55432` to avoid conflicts with other local database services.
 
 To run the production server locally:
 

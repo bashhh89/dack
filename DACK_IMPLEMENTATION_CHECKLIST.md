@@ -8,12 +8,14 @@
 - [x] Store live implementation checklist in the skill.
 - [x] Store DACK delivery rules in the skill.
 - [x] Add visible enterprise build checklist to the command center.
+- [x] Boot Payload admin against local Postgres.
+- [ ] Create first Payload admin user.
 - [ ] Keep skill references updated after major DACK decisions.
 
 ## 1. Core Architecture and Platform
 
-- [ ] Design multi-tenant enterprise application architecture.
-- [ ] Add tenant-level data boundaries.
+- [x] Design multi-tenant enterprise application architecture.
+- [x] Add tenant-level data boundaries.
 - [ ] Implement RBAC across users, documents, rates, sub-consultants, and projects.
 - [ ] Support Admin, Proposal Manager, Contributor, and Viewer roles.
 - [ ] Add fine-grained permissions for document access.
@@ -23,7 +25,7 @@
 - [ ] Implement secure data storage with encryption at rest.
 - [ ] Enforce encrypted transport with HTTPS/TLS.
 - [ ] Design for horizontal scalability with a load-balanced app layer.
-- [ ] Design scalable database strategy.
+- [x] Design scalable database strategy.
 - [ ] Add background workers for long-running jobs.
 - [ ] Add high availability deployment plan.
 
