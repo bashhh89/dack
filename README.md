@@ -23,14 +23,14 @@ The current application uses sample data from `src/data/dummyData.ts`. The UI an
 npm install
 npm run lint
 npm run build
-npm run dev -- --host 0.0.0.0
+npm run dev -- --hostname 0.0.0.0
 ```
 
-If the dev server hits the host file-watcher limit, use the production preview:
+To run the production server locally:
 
 ```bash
 npm run build
-npm run preview -- --host 0.0.0.0 --port 4174
+npm run start -- --hostname 0.0.0.0 --port 3000
 ```
 
 ## Verification Gate
@@ -42,10 +42,10 @@ npm run lint
 npm run build
 ```
 
-For a deployed/static preview, also confirm the app serves:
+For a deployed preview, also confirm the app serves:
 
 ```bash
-curl -I http://localhost:4174/
+curl -I http://localhost:3000/
 ```
 
 ## GitHub Flow
@@ -64,17 +64,17 @@ Use the same delivery discipline as the ANC workflow:
 
 ## EasyPanel Deployment
 
-The included `Dockerfile` builds the Vite app and serves the static `dist` output through nginx. In EasyPanel, configure this as a Dockerfile-based app service.
+The included `Dockerfile` builds the Next.js app as a standalone server. In EasyPanel, configure this as a Dockerfile-based app service.
 
 Important isolation rule: deploy this in a DACK-specific EasyPanel project, not the ANC `abc` project. Recommended project name: `dack` or `ahmad-dack`. Keep the project limited to this DACK service so users with ANC project access do not see unrelated personal services.
 
 Recommended service settings:
 
 - Build method: Dockerfile
-- Port: `80`
+- Port: `3000`
 - Health check path: `/`
 - Build command: handled inside Dockerfile
-- Runtime command: handled by nginx image
+- Runtime command: `node server.js`
 - Domain: `dack.basheer.app`
 
 Production verification after deploy:

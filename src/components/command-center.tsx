@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react'
+'use client'
+
+import { useMemo, useState, type ReactNode } from 'react'
 import {
   AlertTriangle,
   BarChart3,
@@ -28,7 +30,6 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react'
-import './App.css'
 import {
   activationChecklist,
   agencyMemory,
@@ -50,7 +51,7 @@ import {
   type Rfp,
   type Severity,
   type WebsiteStatus,
-} from './data/dummyData'
+} from '../data/dummyData'
 
 type SectionKey =
   | 'executive'
@@ -125,7 +126,7 @@ function slug(value: string) {
   return value.toLowerCase().replaceAll(' ', '-').replaceAll('/', '-')
 }
 
-function Badge({ children, tone = 'neutral' }: { children: React.ReactNode; tone?: string }) {
+function Badge({ children, tone = 'neutral' }: { children: ReactNode; tone?: string }) {
   return <span className={`badge ${slug(tone)}`}>{children}</span>
 }
 
@@ -148,7 +149,7 @@ function CardHeader({
 }: {
   eyebrow?: string
   title: string
-  action?: React.ReactNode
+  action?: ReactNode
 }) {
   return (
     <div className="card-header">
@@ -680,7 +681,7 @@ function ActivationPanel() {
   )
 }
 
-function InfoTile({ label, value }: { label: string; value: React.ReactNode }) {
+function InfoTile({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="info-tile">
       <span>{label}</span>
@@ -697,7 +698,7 @@ function Panel({
   ordered = false,
 }: {
   title: string
-  children?: React.ReactNode
+  children?: ReactNode
   items?: string[]
   emphasis?: boolean
   ordered?: boolean
@@ -767,7 +768,7 @@ function TagGroup({ label, tags }: { label: string; tags: string[] }) {
   )
 }
 
-function DataTable({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
+function DataTable({ headers, rows }: { headers: string[]; rows: ReactNode[][] }) {
   return (
     <div className="table-wrap">
       <table>
@@ -792,7 +793,7 @@ function DataTable({ headers, rows }: { headers: string[]; rows: React.ReactNode
   )
 }
 
-function App() {
+export default function CommandCenter() {
   const [activeSection, setActiveSection] = useState<SectionKey>('executive')
   const activeNav = useMemo(
     () => navigation.find((item) => item.id === activeSection) ?? navigation[0],
@@ -858,5 +859,3 @@ function App() {
     </div>
   )
 }
-
-export default App
