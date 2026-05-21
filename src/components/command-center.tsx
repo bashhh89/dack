@@ -23,10 +23,12 @@ import {
   LockKeyhole,
   Megaphone,
   PanelLeft,
+  Plus,
   Search,
   ShieldAlert,
   Sparkles,
   TrendingUp,
+  UploadCloud,
   Users,
   type LucideIcon,
 } from 'lucide-react'
@@ -806,9 +808,13 @@ export default function CommandCenter() {
         <div className="brand">
           <div className="brand-box">DACK</div>
           <div>
-            <strong>Marketing & Proposal Intelligence</strong>
-            <span>Platform Preview</span>
+            <strong>Proposal Command Center</strong>
+            <span>Marketing workspace</span>
           </div>
+        </div>
+        <div className="workspace-status">
+          <span>Live workspace</span>
+          <strong>12 modules mapped</strong>
         </div>
         <nav aria-label="Primary navigation">
           {navigation.map((item) => {
@@ -839,7 +845,14 @@ export default function CommandCenter() {
               <Search size={16} aria-hidden="true" />
               <span>Search pursuits, staff, rates, forms, project sheets</span>
             </div>
-            <Badge tone="Platform Preview">Platform Preview</Badge>
+            <button className="toolbar-button" type="button">
+              <UploadCloud size={16} aria-hidden="true" />
+              Import RFP
+            </button>
+            <button className="toolbar-button primary" type="button">
+              <Plus size={16} aria-hidden="true" />
+              New proposal
+            </button>
           </div>
         </header>
 
