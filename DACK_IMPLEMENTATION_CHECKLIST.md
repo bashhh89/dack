@@ -1,5 +1,14 @@
 # DACK Marketing Platform Implementation Checklist
 
+## 0. Infrastructure and Project Memory
+
+- [x] Create DACK platform Codex skill.
+- [x] Store current requirements in the skill.
+- [x] Store current architecture decisions in the skill.
+- [x] Store live implementation checklist in the skill.
+- [x] Store DACK delivery rules in the skill.
+- [ ] Keep skill references updated after major DACK decisions.
+
 ## 1. Core Architecture and Platform
 
 - [ ] Design multi-tenant enterprise application architecture.
