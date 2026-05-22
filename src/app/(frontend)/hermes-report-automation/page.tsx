@@ -35,7 +35,7 @@ export default function HermesReportAutomationPage() {
             <ArrowLeft size={16} aria-hidden="true" />
             DACK Command Center
           </Link>
-          <span>Hermes Report Automation</span>
+          <Link href="/report-automation">Open working module</Link>
         </nav>
 
         <section className="automation-hero">

@@ -1019,9 +1019,9 @@ export default function CommandCenter() {
               <Search size={16} aria-hidden="true" />
               <span>Search pursuits, staff, rates, forms, project sheets</span>
             </div>
-            <Link className="toolbar-button amber" href="/hermes-report-automation">
+            <Link className="toolbar-button amber" href="/report-automation">
               <Bot size={16} aria-hidden="true" />
-              Hermes report workflow
+              Report automation
             </Link>
             <button className="toolbar-button" type="button">
               <UploadCloud size={16} aria-hidden="true" />

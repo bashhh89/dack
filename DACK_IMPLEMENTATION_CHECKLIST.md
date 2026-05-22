@@ -164,6 +164,8 @@
 - [ ] Generate AI draft text from resumes.
 - [ ] Clearly flag AI-generated text.
 - [ ] Allow easy editing of AI-generated text.
+- [x] Build `/report-automation` workspace for DACK compliance report packets.
+- [x] Support server-side report job creation, job history, output downloads, and Hermes handoff files.
 - [ ] Export final proposals to Word.
 - [ ] Export final proposals to PDF.
 - [ ] Maintain template fidelity during export.
