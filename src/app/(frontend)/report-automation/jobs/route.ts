@@ -43,7 +43,7 @@ function buildHermesPrompt(job: {
 }
 
 function getDackReportCommand() {
-  const candidates = ['/root/.local/bin/dack-report', 'dack-report']
+  const candidates = ['/root/.local/bin/dack-report', '/usr/local/bin/dack-report', 'dack-report']
   return candidates
 }
 
@@ -101,10 +101,15 @@ async function tryRunDackReport(job: ReportAutomationJob, roughReport: ReportAut
     }
   }
 
-  const command = getDackReportCommand()
-  const availableCommand = command[0]
-  const hasLocalWrapper = await fileExists(availableCommand)
-  if (!hasLocalWrapper) {
+  const availableCommand =
+    (await Promise.all(
+      getDackReportCommand().map(async (candidate) => ({
+        candidate,
+        exists: candidate.includes('/') ? await fileExists(candidate) : true,
+      })),
+    )).find((candidate) => candidate.exists)?.candidate
+
+  if (!availableCommand) {
     return {
       status: 'ready_for_hermes' as const,
       message:
