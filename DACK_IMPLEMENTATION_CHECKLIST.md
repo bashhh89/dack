@@ -9,6 +9,7 @@
 - [x] Store DACK delivery rules in the skill.
 - [x] Add visible enterprise build checklist to the command center.
 - [x] Boot Payload admin against local Postgres.
+- [x] Remove visible demo/sample records from the branded command center.
 - [ ] Create first Payload admin user.
 - [ ] Keep skill references updated after major DACK decisions.
 

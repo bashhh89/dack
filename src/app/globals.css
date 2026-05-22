@@ -2733,6 +2733,11 @@ tbody tr:hover td {
   font: inherit;
 }
 
+.dack-shell button:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
 .dack-shell button:focus-visible,
 .dack-shell a:focus-visible {
   outline: 3px solid oklch(0.64 0.12 210 / 0.28);
@@ -2996,7 +3001,8 @@ tbody tr:hover td {
   cursor: pointer;
 }
 
-.dack-stat-grid {
+.dack-stat-grid,
+.dack-answer-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(150px, 1fr));
   gap: 11px;
@@ -3673,6 +3679,463 @@ tbody tr:hover td {
   grid-template-columns: 32px minmax(0, 1fr) auto;
 }
 
+.dack-operating-brief {
+  align-items: center;
+  background:
+    linear-gradient(135deg, oklch(0.985 0.006 232), oklch(0.948 0.016 205)),
+    var(--dack-panel);
+}
+
+.dack-workflow-strip {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(130px, 1fr));
+  gap: 10px;
+  padding: 12px;
+  background: oklch(0.988 0.004 230);
+  border: 1px solid var(--dack-border);
+  border-radius: 8px;
+  box-shadow: 0 10px 26px oklch(0.32 0.025 245 / 0.05);
+}
+
+.dack-workflow-strip article {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  padding: 10px;
+  background: var(--dack-panel-2);
+  border: 1px solid var(--dack-border);
+  border-radius: 7px;
+}
+
+.dack-workflow-strip article .dack-pill {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.dack-workflow-strip strong,
+.dack-pursuit-card strong {
+  display: block;
+  color: var(--dack-ink);
+  font-size: 0.86rem;
+}
+
+.dack-workflow-strip small,
+.dack-card-meta small {
+  display: block;
+  margin-top: 3px;
+  color: var(--dack-muted);
+  font-size: 0.74rem;
+}
+
+.dack-command-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.62fr) minmax(0, 1.5fr) minmax(280px, 0.72fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.dack-queue-panel,
+.dack-side-rail {
+  position: sticky;
+  top: 104px;
+}
+
+.dack-pursuit-stack,
+.dack-side-rail {
+  display: grid;
+  gap: 10px;
+}
+
+.dack-side-rail .dack-alert-card {
+  grid-template-columns: 1fr;
+}
+
+.dack-side-rail .dack-alert-card > div:last-child {
+  display: flex;
+  justify-content: space-between;
+  justify-items: stretch;
+  align-items: center;
+}
+
+.dack-pursuit-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  width: 100%;
+  padding: 12px;
+  color: var(--dack-ink);
+  text-align: left;
+  background: var(--dack-panel-2);
+  border: 1px solid var(--dack-border);
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.dack-pursuit-card:hover,
+.dack-pursuit-card.active {
+  background: oklch(0.985 0.004 230);
+  border-color: oklch(0.74 0.06 205);
+}
+
+.dack-pursuit-card.active {
+  box-shadow: inset 3px 0 0 var(--dack-teal);
+}
+
+.dack-pursuit-card em {
+  display: block;
+  margin-top: 8px;
+  color: oklch(0.42 0.035 245);
+  font-size: 0.76rem;
+  font-style: normal;
+  line-height: 1.38;
+}
+
+.dack-card-meta {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+
+.dack-pursuit-workspace {
+  display: grid;
+  gap: 16px;
+}
+
+.dack-pursuit-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+}
+
+.dack-pursuit-heading h2 {
+  max-width: 900px;
+  margin: 6px 0 9px;
+  color: var(--dack-ink);
+  font-size: 1.38rem;
+  line-height: 1.16;
+}
+
+.dack-pursuit-heading p {
+  max-width: 82ch;
+  margin: 0;
+  color: var(--dack-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.dack-decision-stack {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.dack-decision-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 15px;
+  background: oklch(0.966 0.013 205);
+  border: 1px solid oklch(0.81 0.045 205);
+  border-radius: 8px;
+}
+
+.dack-decision-panel p {
+  margin: 6px 0 0;
+  color: oklch(0.31 0.03 245);
+  font-size: 0.9rem;
+  line-height: 1.52;
+}
+
+.dack-decision-panel button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 12px;
+  color: oklch(0.98 0.006 230);
+  background: oklch(0.28 0.045 245);
+  border: 1px solid oklch(0.28 0.045 245);
+  border-radius: 7px;
+  font-size: 0.83rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.dack-packet-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.dack-packet-summary article {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 12px;
+  background: var(--dack-panel-2);
+  border: 1px solid var(--dack-border);
+  border-radius: 7px;
+}
+
+.dack-packet-summary strong {
+  color: var(--dack-ink);
+  font-size: 1.28rem;
+  line-height: 1;
+}
+
+.dack-packet-summary span {
+  color: var(--dack-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.dack-path-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dack-evidence-list.compact article {
+  grid-template-columns: 32px minmax(0, 1fr);
+}
+
+.dack-evidence-list.compact .dack-pill {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.dack-control-note {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  color: oklch(0.31 0.07 275);
+  background: oklch(0.952 0.018 275);
+  border-color: oklch(0.82 0.05 275);
+}
+
+.dack-control-note strong {
+  display: block;
+  color: oklch(0.28 0.055 275);
+  font-size: 0.9rem;
+}
+
+.dack-control-note p {
+  margin: 5px 0 0;
+  color: oklch(0.43 0.045 275);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.dack-julie-panel {
+  background: oklch(0.972 0.016 86);
+  border-color: oklch(0.84 0.065 82);
+}
+
+.dack-julie-list {
+  display: grid;
+  gap: 9px;
+}
+
+.dack-julie-list article {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  padding: 10px;
+  background: oklch(0.99 0.006 86);
+  border: 1px solid oklch(0.86 0.045 82);
+  border-radius: 7px;
+}
+
+.dack-julie-list span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: oklch(0.25 0.035 245);
+  background: oklch(0.9 0.04 82);
+  border-radius: 7px;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.dack-julie-list p {
+  margin: 0;
+  color: oklch(0.32 0.03 245);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.dack-pill.partial-evidence {
+  color: oklch(0.3 0.075 205);
+  background: oklch(0.94 0.026 205);
+  border-color: oklch(0.82 0.055 205);
+}
+
+.dack-empty-workspace {
+  display: grid;
+  gap: 16px;
+}
+
+.dack-empty-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  padding: 28px;
+  background:
+    linear-gradient(135deg, oklch(0.988 0.006 230), oklch(0.955 0.016 202)),
+    var(--dack-panel);
+  border: 1px solid var(--dack-border);
+  border-radius: 8px;
+  box-shadow: var(--dack-shadow);
+}
+
+.dack-empty-hero h2 {
+  max-width: 900px;
+  margin: 7px 0 10px;
+  color: var(--dack-ink);
+  font-size: 2rem;
+  line-height: 1.08;
+}
+
+.dack-empty-hero p {
+  max-width: 84ch;
+  margin: 0;
+  color: var(--dack-muted);
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.dack-empty-actions {
+  display: grid;
+  gap: 9px;
+  min-width: 190px;
+}
+
+.dack-empty-actions button,
+.dack-empty-actions a {
+  display: inline-flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 13px;
+  color: var(--dack-ink);
+  text-decoration: none;
+  background: var(--dack-panel);
+  border: 1px solid var(--dack-border);
+  border-radius: 7px;
+  font-size: 0.85rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.dack-empty-actions button:first-child {
+  color: oklch(0.98 0.006 230);
+  background: oklch(0.28 0.045 245);
+  border-color: oklch(0.28 0.045 245);
+}
+
+.dack-journey-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.dack-journey-grid article {
+  min-width: 0;
+  padding: 16px;
+  background: var(--dack-panel);
+  border: 1px solid var(--dack-border);
+  border-radius: 8px;
+  box-shadow: 0 10px 26px oklch(0.32 0.025 245 / 0.05);
+}
+
+.dack-journey-index {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.dack-journey-index span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: oklch(0.24 0.034 245);
+  background: oklch(0.9 0.025 45);
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.dack-journey-index svg {
+  color: var(--dack-teal);
+}
+
+.dack-journey-grid h3 {
+  margin: 0 0 8px;
+  color: var(--dack-ink);
+  font-size: 1rem;
+}
+
+.dack-journey-grid p {
+  margin: 0;
+  color: var(--dack-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.dack-empty-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.dack-empty-layout .dack-control-note {
+  grid-column: 1 / -1;
+}
+
+.dack-empty-box {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 16px;
+  background: var(--dack-panel-2);
+  border: 1px dashed var(--dack-soft);
+  border-radius: 8px;
+}
+
+.dack-empty-box svg {
+  color: var(--dack-teal);
+}
+
+.dack-empty-box strong {
+  display: block;
+  color: var(--dack-ink);
+  font-size: 0.95rem;
+}
+
+.dack-empty-box p {
+  margin: 6px 0 0;
+  color: var(--dack-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
 @media (max-width: 1280px) {
   .dack-topbar {
     grid-template-columns: 1fr;
@@ -3683,18 +4146,28 @@ tbody tr:hover td {
   }
 
   .dack-stat-grid,
-  .dack-record-grid {
+  .dack-answer-grid,
+  .dack-record-grid,
+  .dack-workflow-strip {
     grid-template-columns: repeat(3, minmax(170px, 1fr));
   }
 
   .dack-assembly-layout,
   .dack-library-grid,
-  .dack-governance-grid {
+  .dack-governance-grid,
+  .dack-command-layout,
+  .dack-journey-grid,
+  .dack-empty-layout {
     grid-template-columns: 1fr;
   }
 
   .dack-governance-grid .dack-surface:last-child {
     grid-column: auto;
+  }
+
+  .dack-queue-panel,
+  .dack-side-rail {
+    position: static;
   }
 }
 
@@ -3723,6 +4196,11 @@ tbody tr:hover td {
   }
 
   .dack-briefing,
+  .dack-empty-hero,
+  .dack-pursuit-heading,
+  .dack-decision-panel,
+  .dack-path-grid,
+  .dack-packet-summary,
   .dack-rfp-layout,
   .dack-rfp-hero,
   .dack-date-strip,
@@ -3749,8 +4227,43 @@ tbody tr:hover td {
 @media (max-width: 680px) {
   .dack-nav,
   .dack-stat-grid,
-  .dack-record-grid {
+  .dack-answer-grid,
+  .dack-record-grid,
+  .dack-workflow-strip {
     grid-template-columns: 1fr;
+  }
+
+  .dack-rail {
+    padding: 14px;
+  }
+
+  .dack-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dack-rail-brief {
+    display: none;
+  }
+
+  .dack-empty-hero {
+    padding: 18px;
+  }
+
+  .dack-empty-hero h2 {
+    font-size: 1.55rem;
+  }
+
+  .dack-empty-actions {
+    min-width: 0;
+  }
+
+  .dack-briefing {
+    padding: 18px;
+  }
+
+  .dack-briefing h2,
+  .dack-rfp-hero h2 {
+    font-size: 1.45rem;
   }
 
   .dack-search {
@@ -3771,6 +4284,8 @@ tbody tr:hover td {
   }
 
   .dack-evidence-list article,
+  .dack-workflow-strip article,
+  .dack-pursuit-card,
   .dack-alert-card,
   .dack-project-row,
   .dack-activation-list article,
