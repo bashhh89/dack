@@ -1,11 +1,13 @@
 'use client'
 
+import Link from 'next/link'
 import { useMemo, useState, type ReactNode } from 'react'
 import {
   AlertTriangle,
   BarChart3,
   Bell,
   BookOpenCheck,
+  Bot,
   Boxes,
   BriefcaseBusiness,
   Building2,
@@ -1017,6 +1019,10 @@ export default function CommandCenter() {
               <Search size={16} aria-hidden="true" />
               <span>Search pursuits, staff, rates, forms, project sheets</span>
             </div>
+            <Link className="toolbar-button amber" href="/hermes-report-automation">
+              <Bot size={16} aria-hidden="true" />
+              Hermes report workflow
+            </Link>
             <button className="toolbar-button" type="button">
               <UploadCloud size={16} aria-hidden="true" />
               Import RFP
