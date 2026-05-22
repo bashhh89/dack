@@ -1,209 +1,85 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import {
   AlertTriangle,
-  BarChart3,
+  ArrowUpRight,
   Bell,
   BookOpenCheck,
   Bot,
-  Boxes,
-  BriefcaseBusiness,
-  Building2,
-  CalendarClock,
-  CheckCircle2,
+  Check,
   ChevronRight,
-  CircleDollarSign,
   ClipboardCheck,
-  FileCog,
+  FileCheck2,
   FileSearch,
   FileStack,
-  Globe2,
+  Gauge,
   LayoutDashboard,
   Library,
   LockKeyhole,
-  Megaphone,
   PanelLeft,
   Plus,
   Search,
-  ShieldAlert,
+  ShieldCheck,
   Sparkles,
-  TrendingUp,
   UploadCloud,
   Users,
   type LucideIcon,
 } from 'lucide-react'
+
 import {
   activationChecklist,
   agencyMemory,
   alerts,
-  inventory,
-  marketingBudget,
-  marketingRecommendations,
   projectSheets,
   proposalSections,
-  proposals,
   rates,
-  receiptLogPlaceholders,
   rfps,
   staffResumes,
   systemIntelligence,
   teamBuilder,
-  type Agency,
-  type Readiness,
   type Rfp,
   type Severity,
-  type WebsiteStatus,
 } from '../data/dummyData'
 
-type SectionKey =
-  | 'executive'
-  | 'roadmap'
-  | 'rfp'
-  | 'assembly'
-  | 'staffing'
-  | 'projects'
-  | 'pricing'
-  | 'memory'
-  | 'marketing'
-  | 'actions'
-  | 'activation'
+type ViewKey = 'command' | 'rfp' | 'assembly' | 'library' | 'governance' | 'roadmap'
 
 const today = new Date('2026-05-21T12:00:00')
 
-const navigation: { id: SectionKey; label: string; icon: LucideIcon }[] = [
-  { id: 'executive', label: 'Executive Command Center', icon: LayoutDashboard },
-  { id: 'roadmap', label: 'Enterprise Build Checklist', icon: ClipboardCheck },
-  { id: 'rfp', label: 'RFP Intelligence Workspace', icon: FileSearch },
-  { id: 'assembly', label: 'Proposal Assembly Room', icon: FileStack },
-  { id: 'staffing', label: 'Resume & Staffing Intelligence', icon: Users },
-  { id: 'projects', label: 'Project Sheet Matching', icon: Library },
-  { id: 'pricing', label: 'Rate & Pricing Intelligence', icon: CircleDollarSign },
-  { id: 'memory', label: 'Agency & Teaming Memory', icon: BookOpenCheck },
-  { id: 'marketing', label: 'Marketing Operations', icon: Megaphone },
-  { id: 'actions', label: 'Alerts & Action Center', icon: Bell },
-  { id: 'activation', label: 'Ready for DACK Data', icon: FileCog },
+const views: { id: ViewKey; label: string; icon: LucideIcon }[] = [
+  { id: 'command', label: 'Command', icon: LayoutDashboard },
+  { id: 'rfp', label: 'RFP Review', icon: FileSearch },
+  { id: 'assembly', label: 'Assembly', icon: FileStack },
+  { id: 'library', label: 'Library', icon: Library },
+  { id: 'governance', label: 'Governance', icon: ShieldCheck },
+  { id: 'roadmap', label: 'Build Plan', icon: ClipboardCheck },
 ]
 
-const subtitles: Record<SectionKey, string> = {
-  executive: 'Leadership visibility across pursuits, risk, value, staffing, compliance, and marketing readiness.',
-  roadmap: 'The live path from polished prototype to enterprise-grade DACK proposal operating system.',
-  rfp: 'A working RFP review environment that converts requirements into actions, gaps, team recommendations, and proposal structure.',
-  assembly: 'A visual proposal builder that shows reusable content, current outline readiness, owners, and section-level recommendations.',
-  staffing: 'Staffing fit, resume usage, certification risk, and teaming participation in one operating view.',
-  projects: 'Project sheet matching with relevance scoring, website readiness, and pursuit-specific rationale.',
-  pricing: 'Agency-specific rate intelligence with prime/sub relationships, expiration warnings, and restricted access signals.',
-  memory: 'Institutional knowledge for agencies, teaming partners, recurring requirements, and proposal strategy.',
-  marketing: 'Budget, inventory, website content gaps, and pursuit-driven marketing recommendations.',
-  actions: 'Prioritized action center with owners, due dates, recommended actions, and related records.',
-  activation: 'Working data model and file checklist for replacing sample data with DACK’s real materials.',
-}
-
-type BuildItem = {
-  label: string
-  status: 'Done' | 'Now' | 'Next' | 'Later'
-  owner: string
-}
-
-type BuildPhase = {
-  title: string
-  outcome: string
-  items: BuildItem[]
-}
-
-const enterpriseBuildPhases: BuildPhase[] = [
-  {
-    title: 'Foundation',
-    outcome: 'A real Next.js product shell with visible project memory and build rules.',
-    items: [
-      { label: 'Next.js app router foundation', status: 'Done', owner: 'Platform' },
-      { label: 'Modern DACK command center UI', status: 'Done', owner: 'Product' },
-      { label: 'DACK skill with requirements, decisions, checklist, and rules', status: 'Done', owner: 'Platform' },
-      { label: 'Repo implementation checklist', status: 'Done', owner: 'Product' },
-    ],
-  },
-  {
-    title: 'Enterprise Data Backbone',
-    outcome: 'Payload, Postgres, tenant boundaries, collections, and admin control room.',
-    items: [
-      { label: 'Install and configure Payload', status: 'Done', owner: 'Platform' },
-      { label: 'Configure Postgres adapter and environment', status: 'Done', owner: 'Platform' },
-      { label: 'Create /admin and Payload route group', status: 'Done', owner: 'Platform' },
-      { label: 'Define Organizations, Users, Agencies, Proposals, RFPs, Documents', status: 'Done', owner: 'Platform' },
-      { label: 'Define Staff, Resumes, Projects, Rates, Subconsultants, Certifications', status: 'Done', owner: 'Platform' },
-      { label: 'Boot admin against local Postgres', status: 'Done', owner: 'Platform' },
-      { label: 'Create first admin user', status: 'Now', owner: 'Platform' },
-      { label: 'Replace prototype data reads with Payload records', status: 'Next', owner: 'Product' },
-    ],
-  },
-  {
-    title: 'Governance and Permissions',
-    outcome: 'No sensitive rates, contracts, or financial documents leak to the wrong people.',
-    items: [
-      { label: 'Admin, Proposal Manager, Contributor, Viewer roles', status: 'Next', owner: 'Security' },
-      { label: 'Finance-sensitive rate access', status: 'Next', owner: 'Security' },
-      { label: 'Tenant scoping on major collections', status: 'Next', owner: 'Security' },
-      { label: 'Audit events for sensitive actions', status: 'Next', owner: 'Security' },
-    ],
-  },
-  {
-    title: 'RFP Intelligence',
-    outcome: 'Upload RFPs, extract requirements, cite sources, and force human review.',
-    items: [
-      { label: 'RFP upload and original document storage', status: 'Next', owner: 'AI' },
-      { label: 'Text extraction and document parsing queue', status: 'Next', owner: 'AI' },
-      { label: 'Requirement, deadline, form, criteria extraction', status: 'Later', owner: 'AI' },
-      { label: 'Citation/source storage', status: 'Later', owner: 'AI' },
-      { label: 'Strong / Partial / No evidence states', status: 'Later', owner: 'AI' },
-    ],
-  },
-  {
-    title: 'Proposal Operating System',
-    outcome: 'DACK-specific workspace for resumes, project sheets, rates, subs, templates, and proposal assembly.',
-    items: [
-      { label: 'Resume and project sheet libraries', status: 'Later', owner: 'Product' },
-      { label: 'Subconsultant quota tracking', status: 'Later', owner: 'Product' },
-      { label: 'Rate management with restricted views', status: 'Later', owner: 'Finance' },
-      { label: 'Content library and agency templates', status: 'Later', owner: 'Product' },
-      { label: 'Section-based proposal builder', status: 'Later', owner: 'Product' },
-    ],
-  },
-  {
-    title: 'Production Readiness',
-    outcome: 'Reliable enterprise deployment with monitoring, backup, export, and recovery.',
-    items: [
-      { label: 'Background jobs for AI, ingestion, and batch exports', status: 'Later', owner: 'Ops' },
-      { label: 'Logs, metrics, and alerting', status: 'Later', owner: 'Ops' },
-      { label: 'Backup and restore procedure', status: 'Later', owner: 'Ops' },
-      { label: 'Word/PDF export after templates stabilize', status: 'Later', owner: 'Product' },
-      { label: 'Website readiness alerts for project sheets', status: 'Later', owner: 'Marketing' },
-    ],
-  },
+const buildPlan = [
+  { label: 'Payload collections', status: 'Done', owner: 'Platform' },
+  { label: 'First admin user', status: 'Now', owner: 'Platform' },
+  { label: 'RBAC and finance gates', status: 'Next', owner: 'Security' },
+  { label: 'Replace sample data', status: 'Next', owner: 'Product' },
+  { label: 'RFP upload and parsing jobs', status: 'Next', owner: 'AI' },
+  { label: 'Citation review queue', status: 'Later', owner: 'AI' },
+  { label: 'Proposal builder persistence', status: 'Later', owner: 'Product' },
+  { label: 'Word and PDF export', status: 'Later', owner: 'Delivery' },
 ]
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    notation: value >= 1_000_000 ? 'compact' : 'standard',
-    maximumFractionDigits: value >= 1_000_000 ? 1 : 0,
-  }).format(value)
-}
-
-function formatFullCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
+    notation: value >= 1_000_000 ? 'compact' : 'standard',
+    style: 'currency',
   }).format(value)
 }
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
     day: 'numeric',
-    year: 'numeric',
+    month: 'short',
   }).format(new Date(`${value}T12:00:00`))
 }
 
@@ -215,35 +91,51 @@ function slug(value: string) {
   return value.toLowerCase().replaceAll(' ', '-').replaceAll('/', '-')
 }
 
-function Badge({ children, tone = 'neutral' }: { children: ReactNode; tone?: string }) {
-  return <span className={`badge ${slug(tone)}`}>{children}</span>
+function Pill({ children, tone = 'neutral' }: { children: ReactNode; tone?: string }) {
+  return <span className={`dack-pill ${slug(tone)}`}>{children}</span>
 }
 
-function ReadinessBadge({ status }: { status: Readiness }) {
-  return <Badge tone={status}>{status}</Badge>
+function IconButton({ children, label }: { children: ReactNode; label: string }) {
+  return (
+    <button className="dack-icon-button" type="button" aria-label={label} title={label}>
+      {children}
+    </button>
+  )
 }
 
-function SeverityBadge({ severity }: { severity: Severity }) {
-  return <Badge tone={severity}>{severity}</Badge>
+function Stat({
+  label,
+  value,
+  note,
+  tone = 'neutral',
+}: {
+  label: string
+  value: string | number
+  note: string
+  tone?: string
+}) {
+  return (
+    <article className={`dack-stat ${slug(tone)}`}>
+      <span>{label}</span>
+      <strong>{value}</strong>
+      <p>{note}</p>
+    </article>
+  )
 }
 
-function WebsiteBadge({ status }: { status: WebsiteStatus }) {
-  return <Badge tone={status}>{status}</Badge>
-}
-
-function CardHeader({
+function SectionHeader({
   eyebrow,
   title,
   action,
 }: {
-  eyebrow?: string
+  eyebrow: string
   title: string
   action?: ReactNode
 }) {
   return (
-    <div className="card-header">
+    <div className="dack-section-header">
       <div>
-        {eyebrow && <span className="eyebrow">{eyebrow}</span>}
+        <span>{eyebrow}</span>
         <h2>{title}</h2>
       </div>
       {action}
@@ -251,323 +143,245 @@ function CardHeader({
   )
 }
 
-function MetricCard({
-  icon: Icon,
-  label,
-  value,
-  note,
-  tone = 'blue',
-}: {
-  icon: LucideIcon
-  label: string
-  value: string | number
-  note: string
-  tone?: 'blue' | 'green' | 'amber' | 'red'
-}) {
-  return (
-    <article className={`metric-card ${tone}`}>
-      <div className="metric-card-top">
-        <span>{label}</span>
-        <div className="metric-icon">
-          <Icon size={18} aria-hidden="true" />
-        </div>
-      </div>
-      <strong>{value}</strong>
-      <p>{note}</p>
-    </article>
-  )
-}
-
-function ExecutiveCommandCenter() {
-  const activePursuits = rfps.length
-  const dueThisWeek = rfps.filter((rfp) => daysUntil(rfp.dueDate) <= 8).length
-  const highRisk = rfps.filter((rfp) => rfp.riskLevel === 'High Risk').length
-  const proposedValue = proposals.reduce((total, proposal) => total + proposal.proposedValue, 0)
-  const awardedValue = proposals.reduce((total, proposal) => total + proposal.awardedValue, 0)
-  const won = proposals.filter((proposal) => proposal.outcome === 'Won').length
-  const lost = proposals.filter((proposal) => proposal.outcome === 'Lost').length
-  const winRate = Math.round((won / (won + lost)) * 100)
-  const complianceRisks = alerts.filter((alert) => ['Compliance', 'Certification', 'Rates'].includes(alert.category)).length
-  const staffRisks = staffResumes.filter((staff) => daysUntil(staff.certificationExpirationDate) < 45).length
-  const websiteGaps = projectSheets.filter((sheet) => sheet.websiteStatus !== 'On Website').length
-  const marketingActions = marketingRecommendations.filter((item) => item.priority !== 'Low').length
+function CommandCenter() {
+  const [activeView, setActiveView] = useState<ViewKey>('command')
+  const [selectedRfpId, setSelectedRfpId] = useState(rfps[1]?.id ?? rfps[0].id)
+  const selectedRfp = rfps.find((rfp) => rfp.id === selectedRfpId) ?? rfps[0]
+  const active = views.find((view) => view.id === activeView) ?? views[0]
 
   return (
-    <div className="section-stack">
-      <div className="metrics-grid ten">
-        <MetricCard icon={BriefcaseBusiness} label="Active Pursuits" value={activePursuits} note="RFPs currently tracked" />
-        <MetricCard icon={CalendarClock} label="Due This Week" value={dueThisWeek} note="Submission pressure" tone="amber" />
-        <MetricCard icon={ShieldAlert} label="High-Risk Submissions" value={highRisk} note="Needs leadership attention" tone="red" />
-        <MetricCard icon={TrendingUp} label="Proposal Win Rate" value={`${winRate}%`} note="Won vs. lost outcomes" tone="green" />
-        <MetricCard icon={BarChart3} label="Total Proposed Value" value={formatCurrency(proposedValue)} note="Open and recent pursuit value" />
-        <MetricCard icon={CheckCircle2} label="Total Awarded Value" value={formatCurrency(awardedValue)} note="Recent wins" tone="green" />
-        <MetricCard icon={ClipboardCheck} label="Open Compliance Risks" value={complianceRisks} note="Forms, rates, certifications" tone="red" />
-        <MetricCard icon={Users} label="Staff / Certification Risks" value={staffRisks} note="Expiring before pursuit close" tone="amber" />
-        <MetricCard icon={Megaphone} label="Marketing Action Items" value={marketingActions} note="Website and collateral priorities" />
-        <MetricCard icon={Globe2} label="Website Content Gaps" value={websiteGaps} note="Missing or stale project sheets" tone="amber" />
-      </div>
-
-      <div className="control-grid">
-        <section className="card wide">
-          <CardHeader eyebrow="System Intelligence" title="Recommendations From the Working Data Model" action={<Badge tone="Platform Preview">Platform Preview</Badge>} />
-          <div className="intelligence-list">
-            {systemIntelligence.map((item) => (
-              <article key={item}>
-                <Sparkles size={17} aria-hidden="true" />
-                <span>{item}</span>
-              </article>
-            ))}
+    <div className="dack-shell">
+      <aside className="dack-rail">
+        <div className="dack-brand-lockup">
+          <div className="dack-mark">D</div>
+          <div>
+            <strong>DACK</strong>
+            <span>Proposal Command</span>
           </div>
-        </section>
-
-        <section className="card">
-          <CardHeader eyebrow="Leadership Queue" title="Pursuits Requiring Attention" />
-          <div className="pursuit-list">
-            {rfps.slice(0, 4).map((rfp) => (
-              <article key={rfp.id}>
-                <div>
-                  <h3>{rfp.name}</h3>
-                  <span>{rfp.agency} · Due {formatDate(rfp.dueDate)}</span>
-                </div>
-                <Badge tone={rfp.riskLevel}>{rfp.riskLevel}</Badge>
-              </article>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      <section className="card">
-        <CardHeader eyebrow="Pursuit Value" title="Active and Recent Proposal Portfolio" />
-        <DataTable
-          headers={['Proposal', 'Agency', 'Lead', 'Due Date', 'Status', 'Risk', 'Proposed Value', 'Awarded Value']}
-          rows={proposals.map((proposal) => [
-            <strong>{proposal.title}</strong>,
-            proposal.agency,
-            proposal.lead,
-            formatDate(proposal.dueDate),
-            <Badge tone={proposal.status}>{proposal.status}</Badge>,
-            <Badge tone={proposal.riskLevel}>{proposal.riskLevel}</Badge>,
-            formatFullCurrency(proposal.proposedValue),
-            proposal.awardedValue ? formatFullCurrency(proposal.awardedValue) : 'Pending',
-          ])}
-        />
-      </section>
-    </div>
-  )
-}
-
-function EnterpriseBuildChecklist() {
-  const allItems = enterpriseBuildPhases.flatMap((phase) => phase.items)
-  const done = allItems.filter((item) => item.status === 'Done').length
-  const now = allItems.filter((item) => item.status === 'Now').length
-  const next = allItems.filter((item) => item.status === 'Next').length
-  const later = allItems.filter((item) => item.status === 'Later').length
-  const progress = Math.round((done / allItems.length) * 100)
-  const activePhase = enterpriseBuildPhases.find((phase) => phase.items.some((item) => item.status === 'Now'))
-
-  return (
-    <div className="section-stack">
-      <section className="card build-hero">
-        <div>
-          <span className="eyebrow">Enterprise path</span>
-          <h2>No-bullshit checklist to finished product</h2>
-          <p>
-            This is the operating scoreboard: foundation first, AI second, export third. Every checked item should represent something real,
-            verified, and useful to DACK.
-          </p>
         </div>
-        <div className="build-progress">
-          <strong>{progress}%</strong>
-          <span>foundation progress</span>
-        </div>
-      </section>
 
-      <div className="metrics-grid roadmap-metrics">
-        <MetricCard icon={CheckCircle2} label="Done" value={done} note="Completed and verified" tone="green" />
-        <MetricCard icon={ClipboardCheck} label="In Motion" value={now} note={activePhase ? activePhase.title : 'Ready to choose'} tone="blue" />
-        <MetricCard icon={FileStack} label="Next Up" value={next} note="Near-term build scope" tone="amber" />
-        <MetricCard icon={ShieldAlert} label="Enterprise Gates" value={4} note="RBAC, audit, tenants, backups" tone="red" />
-        <MetricCard icon={Globe2} label="Later" value={later} note="Phase-gated, not forgotten" />
-      </div>
-
-      <section className="card">
-        <CardHeader eyebrow="Phase Gates" title="Build Sequence We Are Holding Ourselves To" action={<Badge tone="Working Data Model">Live Checklist</Badge>} />
-        <div className="phase-roadmap">
-          {enterpriseBuildPhases.map((phase, index) => {
-            const phaseDone = phase.items.filter((item) => item.status === 'Done').length
-            const phaseProgress = Math.round((phaseDone / phase.items.length) * 100)
-
+        <nav className="dack-nav" aria-label="DACK workspace">
+          {views.map((view) => {
+            const Icon = view.icon
             return (
-              <article className="phase-card" key={phase.title}>
-                <div className="phase-number">{index + 1}</div>
-                <div className="phase-content">
-                  <div className="phase-head">
-                    <div>
-                      <h3>{phase.title}</h3>
-                      <p>{phase.outcome}</p>
-                    </div>
-                    <Badge tone={phaseProgress === 100 ? 'Complete' : phase.items.some((item) => item.status === 'Now') ? 'In Progress' : 'Needs Review'}>
-                      {phaseProgress}% complete
-                    </Badge>
-                  </div>
-                  <div className="score-track"><span style={{ width: `${phaseProgress}%` }} /></div>
-                  <div className="build-list">
-                    {phase.items.map((item) => (
-                      <article className={`build-item ${slug(item.status)}`} key={item.label}>
-                        <span className="build-check">{item.status === 'Done' ? 'OK' : item.status === 'Now' ? 'GO' : ''}</span>
-                        <div>
-                          <strong>{item.label}</strong>
-                          <span>{item.owner}</span>
-                        </div>
-                        <Badge tone={item.status}>{item.status}</Badge>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              </article>
+              <button
+                className={view.id === activeView ? 'dack-nav-item active' : 'dack-nav-item'}
+                key={view.id}
+                type="button"
+                onClick={() => setActiveView(view.id)}
+              >
+                <Icon size={18} aria-hidden="true" />
+                <span>{view.label}</span>
+              </button>
             )
           })}
-        </div>
-      </section>
+        </nav>
 
-      <section className="card">
-        <CardHeader eyebrow="Rules" title="Enterprise Grade Means These Cannot Be Faked" />
-        <div className="rule-grid">
-          <Panel title="Data Foundation" items={['Real Payload collections replace prototype data.', 'Every major record is tenant-scoped.', 'Payload admin is the data control room, not the main UX.']} />
-          <Panel title="Security" items={['Rates and contracts are restricted from day one.', 'RBAC is required before live client data.', 'Sensitive actions create audit events.']} emphasis />
-          <Panel title="AI" items={['AI outputs require citations.', 'Human review is mandatory before confirmation.', 'Use Strong / Partial / No evidence states.']} />
-          <Panel title="Operations" items={['Background jobs handle heavy work.', 'Logs, metrics, backups, and restore checks are production requirements.', 'Export waits until templates and data model are stable.']} />
+        <div className="dack-rail-brief">
+          <PanelLeft size={18} aria-hidden="true" />
+          <p>Custom workflow shell. Payload is the control room; this is where proposal teams work.</p>
         </div>
-      </section>
+      </aside>
+
+      <main className="dack-main">
+        <header className="dack-topbar">
+          <div className="dack-title-block">
+            <span>DACK Consulting Solutions</span>
+            <h1>{active.label}</h1>
+            <p>Proposal operations, RFP intelligence, document control, rates, staffing, and project evidence in one command workspace.</p>
+          </div>
+
+          <div className="dack-toolbar" aria-label="Workspace actions">
+            <div className="dack-search">
+              <Search size={16} aria-hidden="true" />
+              <span>Search pursuits, resumes, rates, forms, citations</span>
+            </div>
+            <IconButton label="Upload RFP">
+              <UploadCloud size={17} aria-hidden="true" />
+            </IconButton>
+            <Link className="dack-toolbar-link" href="/report-automation">
+              <Bot size={16} aria-hidden="true" />
+              Reports
+            </Link>
+            <button className="dack-primary-action" type="button">
+              <Plus size={16} aria-hidden="true" />
+              New pursuit
+            </button>
+          </div>
+        </header>
+
+        <div className="dack-workspace">
+          {activeView === 'command' && <CommandView setActiveView={setActiveView} setSelectedRfpId={setSelectedRfpId} />}
+          {activeView === 'rfp' && <RfpReview selectedRfp={selectedRfp} setSelectedRfpId={setSelectedRfpId} />}
+          {activeView === 'assembly' && <AssemblyView />}
+          {activeView === 'library' && <LibraryView />}
+          {activeView === 'governance' && <GovernanceView />}
+          {activeView === 'roadmap' && <RoadmapView />}
+        </div>
+      </main>
     </div>
   )
 }
 
-function RfpWorkspace() {
-  const [selectedId, setSelectedId] = useState(rfps[0].id)
-  const selectedRfp = rfps.find((rfp) => rfp.id === selectedId) ?? rfps[0]
+function CommandView({
+  setActiveView,
+  setSelectedRfpId,
+}: {
+  setActiveView: (view: ViewKey) => void
+  setSelectedRfpId: (id: string) => void
+}) {
+  const dueSoon = rfps.filter((rfp) => daysUntil(rfp.dueDate) <= 10).length
+  const highSeverity = alerts.filter((alert) => alert.severity === 'High').length
+  const openValue = rfps.reduce((total, rfp) => total + rfp.estimatedValue, 0)
+  const restrictedRates = rates.filter((rate) => rate.accessLevel === 'Finance Only' || rate.accessLevel === 'Restricted').length
+  const websiteGaps = projectSheets.filter((project) => project.websiteStatus !== 'On Website').length
 
   return (
-    <div className="rfp-workspace">
-      <section className="card rfp-selector">
-        <CardHeader eyebrow="Analyzed RFPs" title="Intelligence Queue" />
-        <div className="selector-list">
+    <div className="dack-command-grid">
+      <section className="dack-briefing">
+        <div>
+          <span className="dack-kicker">Morning operating brief</span>
+          <h2>Three pursuits need decisions before the proposal team burns time.</h2>
+          <p>
+            The workspace should make DACK faster at deciding what to chase, what evidence supports the response,
+            and what cannot move forward without a human sign-off.
+          </p>
+        </div>
+        <div className="dack-briefing-actions">
+          <button type="button" onClick={() => setActiveView('rfp')}>
+            Review RFP queue
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </button>
+          <button type="button" onClick={() => setActiveView('governance')}>
+            Check restrictions
+            <LockKeyhole size={16} aria-hidden="true" />
+          </button>
+        </div>
+      </section>
+
+      <div className="dack-stat-grid">
+        <Stat label="Active RFPs" value={rfps.length} note={`${dueSoon} due inside 10 days`} tone="info" />
+        <Stat label="Open pursuit value" value={formatCurrency(openValue)} note="Analyzed opportunity value" tone="money" />
+        <Stat label="High alerts" value={highSeverity} note="Deadline, compliance, certification" tone="danger" />
+        <Stat label="Restricted rates" value={restrictedRates} note="Hidden from broad users" tone="locked" />
+        <Stat label="Website gaps" value={websiteGaps} note="Project sheets missing or stale" tone="warning" />
+      </div>
+
+      <section className="dack-surface dack-priority-surface">
+        <SectionHeader eyebrow="Pursuit triage" title="Work that should move today" action={<Pill tone="live">Live sample data</Pill>} />
+        <div className="dack-pursuit-table" role="table" aria-label="Priority pursuits">
+          <div className="dack-table-head" role="row">
+            <span>Opportunity</span>
+            <span>Due</span>
+            <span>Risk</span>
+            <span>Decision</span>
+            <span>Value</span>
+          </div>
           {rfps.map((rfp) => (
-            <button className={rfp.id === selectedId ? 'selector-card active' : 'selector-card'} key={rfp.id} type="button" onClick={() => setSelectedId(rfp.id)}>
-              <span className="selector-title">
+            <button
+              className="dack-pursuit-row"
+              key={rfp.id}
+              type="button"
+              onClick={() => {
+                setSelectedRfpId(rfp.id)
+                setActiveView('rfp')
+              }}
+            >
+              <span>
                 <strong>{rfp.name}</strong>
-                <ChevronRight size={18} aria-hidden="true" />
+                <small>{rfp.agency} · {rfp.status}</small>
               </span>
-              <span>{rfp.agency} · {formatCurrency(rfp.estimatedValue)} · Due {formatDate(rfp.dueDate)}</span>
-              <span className="inline-badges">
-                <Badge tone={rfp.recommendation}>{rfp.recommendation}</Badge>
-                <Badge tone={rfp.riskLevel}>{rfp.riskLevel}</Badge>
-              </span>
+              <span>{formatDate(rfp.dueDate)}</span>
+              <span><Pill tone={rfp.riskLevel}>{rfp.riskLevel}</Pill></span>
+              <span><Pill tone={rfp.recommendation}>{rfp.recommendation}</Pill></span>
+              <span>{formatCurrency(rfp.estimatedValue)}</span>
             </button>
           ))}
         </div>
       </section>
 
-      <RfpDetail rfp={selectedRfp} />
+      <section className="dack-surface">
+        <SectionHeader eyebrow="AI evidence rules" title="Extraction queue must stay reviewable" />
+        <div className="dack-evidence-list">
+          {systemIntelligence.slice(0, 5).map((item, index) => (
+            <article key={item}>
+              <div className="dack-evidence-index">{index + 1}</div>
+              <p>{item}</p>
+              <Pill tone={index < 2 ? 'partial evidence' : 'needs review'}>{index < 2 ? 'Partial evidence' : 'Needs review'}</Pill>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="dack-surface">
+        <SectionHeader eyebrow="Critical alerts" title="Do not let these drift" />
+        <div className="dack-alert-stack">
+          {alerts.slice(0, 4).map((alert) => (
+            <AlertCard alert={alert} key={alert.id} />
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
 
-function RfpDetail({ rfp }: { rfp: Rfp }) {
+function RfpReview({
+  selectedRfp,
+  setSelectedRfpId,
+}: {
+  selectedRfp: Rfp
+  setSelectedRfpId: (id: string) => void
+}) {
   return (
-    <section className="card rfp-detail">
-      <CardHeader
-        eyebrow={`${rfp.agency} RFP Intelligence`}
-        title={rfp.name}
-        action={<Badge tone={rfp.recommendation}>{rfp.recommendation}</Badge>}
-      />
-      <p className="lead-copy">{rfp.summary}</p>
-
-      <div className="summary-strip">
-        <InfoTile label="Due Date" value={formatDate(rfp.dueDate)} />
-        <InfoTile label="Questions Due" value={formatDate(rfp.questionDeadline)} />
-        <InfoTile label="Internal Review" value={formatDate(rfp.internalReviewDate)} />
-        <InfoTile label="Interview Window" value={rfp.interviewWindow} />
-      </div>
-
-      <div className="detail-grid">
-        <Panel title="Go / No-Go Recommendation">
-          <p>{rfp.recommendationReason}</p>
-        </Panel>
-        <Panel title="Key Requirements" items={rfp.keyRequirements} />
-        <ChecklistPanel title="Required Forms" items={rfp.requiredForms} />
-        <ChecklistPanel title="Compliance Checklist" items={rfp.complianceChecklist} />
-        <TeamPanel title="Suggested Team" team={rfp.suggestedTeam} />
-        <Panel title="Suggested Resumes" items={rfp.suggestedResumes} />
-        <Panel title="Suggested Project Sheets" items={rfp.suggestedProjectSheets} />
-        <Panel title="Gaps and Risks" items={rfp.gapsAndRisks} emphasis />
-        <Panel title="Draft Proposal Outline" items={rfp.draftOutline} ordered />
-        <Panel title="Next Recommended Actions" items={rfp.nextActions} emphasis />
-      </div>
-    </section>
-  )
-}
-
-function ProposalAssemblyRoom() {
-  const [selectedSectionId, setSelectedSectionId] = useState(proposalSections[2].id)
-  const selected = proposalSections.find((section) => section.id === selectedSectionId) ?? proposalSections[0]
-
-  return (
-    <div className="assembly-room">
-      <section className="card content-blocks">
-        <CardHeader eyebrow="Available Content" title="Section Library" />
-        {proposalSections.map((section) => (
-          <button className={selected.id === section.id ? 'content-block active' : 'content-block'} key={section.id} type="button" onClick={() => setSelectedSectionId(section.id)}>
+    <div className="dack-rfp-layout">
+      <section className="dack-rfp-list">
+        <SectionHeader eyebrow="RFP inbox" title="Intake queue" />
+        {rfps.map((rfp) => (
+          <button
+            className={rfp.id === selectedRfp.id ? 'dack-rfp-button active' : 'dack-rfp-button'}
+            key={rfp.id}
+            type="button"
+            onClick={() => setSelectedRfpId(rfp.id)}
+          >
             <span>
-              <strong>{section.title}</strong>
-              <small>{section.type} · {section.source}</small>
+              <strong>{rfp.name}</strong>
+              <small>{rfp.agency} · {formatCurrency(rfp.estimatedValue)}</small>
             </span>
-            <ReadinessBadge status={section.status} />
+            <ChevronRight size={16} aria-hidden="true" />
           </button>
         ))}
       </section>
 
-      <section className="card outline-board">
-        <CardHeader eyebrow="Assembly" title="Proposal Outline" action={<Badge tone="Working Data Model">Working Data Model</Badge>} />
-        <div className="outline-list">
-          {proposalSections.map((section, index) => (
-            <button className={selected.id === section.id ? 'outline-item active' : 'outline-item'} key={section.id} type="button" onClick={() => setSelectedSectionId(section.id)}>
-              <span className="outline-number">{index + 1}</span>
-              <span>
-                <strong>{section.title}</strong>
-                <small>Owner: {section.owner}</small>
-              </span>
-              <ReadinessBadge status={section.status} />
-            </button>
-          ))}
+      <section className="dack-surface dack-rfp-detail">
+        <div className="dack-rfp-hero">
+          <div>
+            <span className="dack-kicker">{selectedRfp.agency} intelligence packet</span>
+            <h2>{selectedRfp.name}</h2>
+            <p>{selectedRfp.summary}</p>
+          </div>
+          <div className="dack-rfp-status">
+            <Pill tone={selectedRfp.recommendation}>{selectedRfp.recommendation}</Pill>
+            <Pill tone={selectedRfp.riskLevel}>{selectedRfp.riskLevel}</Pill>
+          </div>
         </div>
-      </section>
 
-      <section className="card section-detail">
-        <CardHeader eyebrow="Selected Section" title={selected.title} action={<ReadinessBadge status={selected.status} />} />
-        <div className="section-meta">
-          <InfoTile label="Owner" value={selected.owner} />
-          <InfoTile label="Content Type" value={selected.type} />
-          <InfoTile label="Source" value={selected.source} />
+        <div className="dack-date-strip">
+          <Info label="Due" value={formatDate(selectedRfp.dueDate)} />
+          <Info label="Questions" value={formatDate(selectedRfp.questionDeadline)} />
+          <Info label="Internal review" value={formatDate(selectedRfp.internalReviewDate)} />
+          <Info label="Interview" value={selectedRfp.interviewWindow} />
         </div>
-        <Panel title="Content Preview">
-          <p>{selected.preview}</p>
-        </Panel>
-        <Panel title="System Recommendations" items={selected.recommendations} emphasis />
-      </section>
-    </div>
-  )
-}
 
-function StaffingIntelligence() {
-  return (
-    <div className="section-stack">
-      <section className="card">
-        <CardHeader eyebrow="Team Builder" title="Selected Team, Coverage, and Fit" action={<div className="score-pill">{teamBuilder.fitScore}% Fit Score</div>} />
-        <div className="team-builder">
-          <Panel title="Selected Team">
-            <div className="mini-records">
-              {teamBuilder.selectedTeam.map((member) => (
+        <div className="dack-review-grid">
+          <RecordPanel title="Decision basis" icon={Gauge}>
+            <p>{selectedRfp.recommendationReason}</p>
+          </RecordPanel>
+          <RecordPanel title="Key requirements" icon={BookOpenCheck} items={selectedRfp.keyRequirements} />
+          <Checklist title="Required forms" items={selectedRfp.requiredForms} />
+          <Checklist title="Compliance checks" items={selectedRfp.complianceChecklist} />
+          <RecordPanel title="Suggested team" icon={Users}>
+            <div className="dack-team-list">
+              {selectedRfp.suggestedTeam.map((member) => (
                 <article key={member.name}>
                   <strong>{member.name}</strong>
                   <span>{member.role} · {member.fit}% fit</span>
@@ -575,479 +389,298 @@ function StaffingIntelligence() {
                 </article>
               ))}
             </div>
-          </Panel>
-          <Panel title="Missing Roles" items={teamBuilder.missingRoles} emphasis />
-          <ChecklistPanel title="Certification Coverage" items={teamBuilder.certificationCoverage} />
-          <Panel title="MWBE / WBE / SDVOB Participation">
-            <div className="coverage-list">
-              {teamBuilder.participationView.map((item) => (
-                <article key={item.label}>
-                  <span>{item.label}</span>
-                  <strong>{item.value}</strong>
-                  <ReadinessBadge status={item.status} />
-                </article>
-              ))}
-            </div>
-          </Panel>
+          </RecordPanel>
+          <RecordPanel title="Gaps and risks" icon={AlertTriangle} items={selectedRfp.gapsAndRisks} tone="danger" />
+          <RecordPanel title="Proposal outline" icon={FileStack} items={selectedRfp.draftOutline} ordered />
+          <RecordPanel title="Next actions" icon={Bell} items={selectedRfp.nextActions} tone="warning" />
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function AssemblyView() {
+  const [selectedSectionId, setSelectedSectionId] = useState(proposalSections[2].id)
+  const selected = proposalSections.find((section) => section.id === selectedSectionId) ?? proposalSections[0]
+
+  return (
+    <div className="dack-assembly-layout">
+      <section className="dack-surface">
+        <SectionHeader eyebrow="Proposal assembly" title="Current package" action={<Pill tone="in progress">In progress</Pill>} />
+        <div className="dack-outline">
+          {proposalSections.map((section, index) => (
+            <button
+              className={selected.id === section.id ? 'dack-outline-row active' : 'dack-outline-row'}
+              key={section.id}
+              type="button"
+              onClick={() => setSelectedSectionId(section.id)}
+            >
+              <span className="dack-number">{index + 1}</span>
+              <span>
+                <strong>{section.title}</strong>
+                <small>{section.owner} · {section.type}</small>
+              </span>
+              <Pill tone={section.status}>{section.status}</Pill>
+            </button>
+          ))}
         </div>
       </section>
 
-      <div className="staff-grid">
-        {staffResumes.map((staff) => {
-          const expiring = daysUntil(staff.certificationExpirationDate) < 45
-          const bestFit = Object.entries(staff.agencyFit).sort((a, b) => b[1] - a[1])[0]
-
-          return (
-            <article className="card staff-card" key={staff.id}>
-              <div className="staff-heading">
-                <div className="avatar">{staff.name.split(' ').map((part) => part[0]).join('').slice(0, 2)}</div>
-                <div>
-                  <h2>{staff.name}</h2>
-                  <p>{staff.role} · {staff.yearsExperience} years</p>
-                </div>
-              </div>
-              <div className="record-row">
-                <span>Agency fit</span>
-                <strong>{bestFit ? `${bestFit[0]} ${bestFit[1]}%` : 'Not scored'}</strong>
-              </div>
-              <div className="record-row">
-                <span>Participation</span>
-                <strong>{staff.participation}</strong>
-              </div>
-              <div className="record-row">
-                <span>Availability</span>
-                <strong>{staff.availability}</strong>
-              </div>
-              {expiring && (
-                <div className="warning-inline">
-                  <AlertTriangle size={16} aria-hidden="true" />
-                  Certification expires {formatDate(staff.certificationExpirationDate)}
-                </div>
-              )}
-              <TagGroup label="Certifications" tags={staff.certifications} />
-              <TagGroup label="Resume Versions" tags={staff.resumeVersions} />
-              <p className="recommendation-copy">{staff.recommendedUsage}</p>
+      <section className="dack-surface dack-section-reader">
+        <SectionHeader eyebrow="Selected section" title={selected.title} action={<Pill tone={selected.status}>{selected.status}</Pill>} />
+        <div className="dack-date-strip compact">
+          <Info label="Owner" value={selected.owner} />
+          <Info label="Type" value={selected.type} />
+          <Info label="Source" value={selected.source} />
+        </div>
+        <p className="dack-reader-copy">{selected.preview}</p>
+        <div className="dack-callout-list">
+          {selected.recommendations.map((item) => (
+            <article key={item}>
+              <Sparkles size={16} aria-hidden="true" />
+              <span>{item}</span>
             </article>
-          )
-        })}
-      </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="dack-surface">
+        <SectionHeader eyebrow="Team coverage" title={`${teamBuilder.fitScore}% fit score`} />
+        <div className="dack-team-list">
+          {teamBuilder.selectedTeam.map((member) => (
+            <article key={member.name}>
+              <strong>{member.name}</strong>
+              <span>{member.role} · {member.fit}% fit</span>
+              <p>{member.reason}</p>
+            </article>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
 
-function ProjectSheetMatching() {
+function LibraryView() {
+  const expiringStaff = staffResumes.filter((staff) => daysUntil(staff.certificationExpirationDate) < 45)
+
   return (
-    <section className="card">
-      <CardHeader eyebrow="Selected RFP Match Set" title="Project Sheets Matched to Queens Courthouse Renovation" />
-      <div className="project-grid">
-        {projectSheets.map((sheet) => (
-          <article className="project-card" key={sheet.id}>
-            <div className="project-card-head">
+    <div className="dack-library-grid">
+      <section className="dack-surface">
+        <SectionHeader eyebrow="Resume library" title="People, fit, and certification exposure" action={<Pill tone="needs review">{expiringStaff.length} at risk</Pill>} />
+        <div className="dack-record-grid">
+          {staffResumes.map((staff) => {
+            const topFit = Object.entries(staff.agencyFit).sort((a, b) => b[1] - a[1])[0]
+            return (
+              <article className="dack-person-card" key={staff.id}>
+                <div className="dack-avatar">{staff.name.split(' ').map((part) => part[0]).join('').slice(0, 2)}</div>
+                <div>
+                  <h3>{staff.name}</h3>
+                  <p>{staff.role}</p>
+                </div>
+                <dl>
+                  <div><dt>Fit</dt><dd>{topFit ? `${topFit[0]} ${topFit[1]}%` : 'Unscored'}</dd></div>
+                  <div><dt>Availability</dt><dd>{staff.availability}</dd></div>
+                  <div><dt>Cert expires</dt><dd>{formatDate(staff.certificationExpirationDate)}</dd></div>
+                </dl>
+              </article>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="dack-surface">
+        <SectionHeader eyebrow="Project sheets" title="Evidence worth reusing" />
+        <div className="dack-project-stack">
+          {projectSheets.map((project) => (
+            <article className="dack-project-row" key={project.id}>
               <div>
-                <span className="eyebrow">{sheet.agency}</span>
-                <h2>{sheet.projectName}</h2>
-                <p>{sheet.projectType}</p>
+                <strong>{project.projectName}</strong>
+                <p>{project.whyItMatches}</p>
+                <span>{project.agency} · {project.year} · {formatCurrency(project.value)}</span>
               </div>
-              <div className="relevance">{sheet.relevanceScore}%</div>
-            </div>
-            <p className="match-reason">{sheet.whyItMatches}</p>
-            <div className="fact-row">
-              <span>{sheet.year}</span>
-              <span>{formatFullCurrency(sheet.value)}</span>
-              <WebsiteBadge status={sheet.websiteStatus} />
-            </div>
-            <TagGroup label="Tags" tags={sheet.tags} />
-            <div className="score-track">
-              <span style={{ width: `${sheet.relevanceScore}%` }} />
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function PricingIntelligence() {
-  return (
-    <section className="card">
-      <CardHeader eyebrow="Sensitive Pricing" title="Rate & Pricing Intelligence" action={<Badge tone="Sensitive Data Restricted">Sensitive Data Restricted</Badge>} />
-      <div className="warning-banner">
-        <LockKeyhole size={18} aria-hidden="true" />
-        Rates, multipliers, and prime/sub pricing should be permission-controlled before live DACK deployment.
-      </div>
-      <DataTable
-        headers={['Employee', 'Title', 'Agency', 'Bare Rate', 'Multiplier', 'Loaded Rate', 'Prime/Sub', 'Effective', 'Expiration', 'Access', 'Warning']}
-        rows={rates.map((rate) => [
-          <strong>{rate.employee}</strong>,
-          rate.title,
-          rate.agency,
-          `$${rate.bareRate.toFixed(2)}`,
-          `${rate.multiplier.toFixed(2)}x`,
-          `$${rate.loadedRate.toFixed(2)}`,
-          rate.primeSubRelationship,
-          formatDate(rate.effectiveDate),
-          formatDate(rate.expirationDate),
-          <Badge tone={rate.accessLevel}>{rate.accessLevel}</Badge>,
-          <Badge tone={rate.warning}>{rate.warning}</Badge>,
-        ])}
-      />
-    </section>
-  )
-}
-
-function AgencyAndTeamingMemory() {
-  const [selectedAgency, setSelectedAgency] = useState<Agency>('DDC')
-  const selected = agencyMemory.find((memory) => memory.agency === selectedAgency) ?? agencyMemory[0]
-
-  return (
-    <div className="memory-layout">
-      <section className="card agency-tabs">
-        <CardHeader eyebrow="Institutional Knowledge" title="Agency Memory" />
-        {agencyMemory.map((memory) => (
-          <button className={memory.agency === selectedAgency ? 'agency-tab active' : 'agency-tab'} key={memory.agency} type="button" onClick={() => setSelectedAgency(memory.agency)}>
-            <Building2 size={18} aria-hidden="true" />
-            {memory.agency}
-          </button>
-        ))}
-      </section>
-
-      <section className="card">
-        <CardHeader eyebrow={`${selected.agency} Playbook`} title="Requirements, Outcomes, Teaming, and Strategy" />
-        <div className="detail-grid">
-          <Panel title="Agency Notes" items={selected.notes} />
-          <Panel title="Recurring Requirements" items={selected.recurringRequirements} />
-          <Panel title="Past Proposal Outcomes" items={selected.pastOutcomes} />
-          <Panel title="Teaming Partner Notes" items={selected.teamingPartnerNotes} />
-          <Panel title="Internal Warnings" items={selected.internalWarnings} emphasis />
-          <Panel title="Proposal Strategy Reminders" items={selected.strategyReminders} />
+              <div>
+                <strong>{project.relevanceScore}%</strong>
+                <Pill tone={project.websiteStatus}>{project.websiteStatus}</Pill>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </div>
   )
 }
 
-function MarketingOperations() {
-  const missingWebsite = projectSheets.filter((sheet) => sheet.websiteStatus !== 'On Website')
-  const homepageProjects = projectSheets.filter((sheet) => sheet.relevanceScore >= 87)
-
+function GovernanceView() {
   return (
-    <div className="section-stack">
-      <div className="marketing-grid">
-        <section className="card">
-          <CardHeader eyebrow="Budget" title="Marketing Budget Tracker" />
-          <div className="budget-list">
-            {marketingBudget.map((item) => {
-              const used = Math.round(((item.spent + item.committed) / item.budget) * 100)
-              return (
-                <article key={item.category}>
-                  <div className="budget-head">
-                    <strong>{item.category}</strong>
-                    <span>{used}% used / committed</span>
-                  </div>
-                  <div className="score-track"><span style={{ width: `${used}%` }} /></div>
-                  <p>{formatFullCurrency(item.spent)} spent · {formatFullCurrency(item.committed)} committed · {item.note}</p>
-                </article>
-              )
-            })}
+    <div className="dack-governance-grid">
+      <section className="dack-surface">
+        <SectionHeader eyebrow="Sensitive rate control" title="Finance data cannot be decorative" action={<Pill tone="restricted">Restricted</Pill>} />
+        <div className="dack-rate-table">
+          <div className="dack-table-head">
+            <span>Name</span>
+            <span>Agency</span>
+            <span>Access</span>
+            <span>Status</span>
           </div>
-        </section>
+          {rates.map((rate) => (
+            <article className="dack-rate-row" key={rate.id}>
+              <span>
+                <strong>{rate.employee}</strong>
+                <small>{rate.title}</small>
+              </span>
+              <span>{rate.agency}</span>
+              <span><Pill tone={rate.accessLevel}>{rate.accessLevel}</Pill></span>
+              <span><Pill tone={rate.warning}>{rate.warning}</Pill></span>
+            </article>
+          ))}
+        </div>
+      </section>
 
-        <section className="card">
-          <CardHeader eyebrow="Inventory" title="Collateral Inventory" />
-          <div className="inventory-list">
-            {inventory.map((item) => (
-              <article key={item.item}>
-                <Boxes size={18} aria-hidden="true" />
-                <div>
-                  <strong>{item.item}</strong>
-                  <span>{item.onHand} on hand · reorder at {item.reorderPoint} · Owner: {item.owner}</span>
-                </div>
-                {item.onHand < item.reorderPoint && <Badge tone="Medium">Reorder</Badge>}
-              </article>
-            ))}
-          </div>
-        </section>
-      </div>
+      <section className="dack-surface">
+        <SectionHeader eyebrow="Agency memory" title="Rules teams should not relearn" />
+        <div className="dack-agency-stack">
+          {agencyMemory.slice(0, 4).map((agency) => (
+            <article key={agency.agency}>
+              <strong>{agency.agency}</strong>
+              <p>{agency.strategyReminders[0]}</p>
+              <small>{agency.internalWarnings[0]}</small>
+            </article>
+          ))}
+        </div>
+      </section>
 
-      <div className="marketing-grid">
-        <section className="card">
-          <CardHeader eyebrow="Receipts" title="Receipt Log Placeholder" />
-          <Panel title="Pending Receipt Workflow" items={receiptLogPlaceholders} />
-        </section>
-
-        <section className="card">
-          <CardHeader eyebrow="Website" title="Website Recommendations" />
-          <div className="recommendation-list">
-            {marketingRecommendations.map((item) => (
-              <article key={item.title}>
-                <SeverityBadge severity={item.priority} />
-                <div>
-                  <strong>{item.title}</strong>
-                  <p>{item.reason}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      <section className="card">
-        <CardHeader eyebrow="Pursuit-Driven Content" title="Project Sheets Missing From Website and Homepage Feature Candidates" />
-        <div className="two-column">
-          <Panel title="Missing or Needs Update" items={missingWebsite.map((sheet) => `${sheet.projectName} - ${sheet.websiteStatus}`)} emphasis />
-          <Panel title="Suggested Homepage Feature Projects" items={homepageProjects.map((sheet) => `${sheet.projectName} - supports ${sheet.agency} pursuits`)} />
+      <section className="dack-surface">
+        <SectionHeader eyebrow="Data activation" title="Real DACK files still needed" />
+        <div className="dack-activation-list">
+          {activationChecklist.map((item) => (
+            <article key={item.source}>
+              <div>
+                <strong>{item.source}</strong>
+                <p>{item.filesNeeded}</p>
+              </div>
+              <Pill tone={item.status}>{item.status}</Pill>
+            </article>
+          ))}
         </div>
       </section>
     </div>
   )
 }
 
-function AlertsActionCenter() {
-  return (
-    <section className="card">
-      <CardHeader eyebrow="Action Center" title="Prioritized Alerts With Recommended Actions" />
-      <div className="alert-table">
-        {alerts.map((alert) => (
-          <article className="action-alert" key={alert.id}>
-            <SeverityBadge severity={alert.severity} />
-            <div>
-              <div className="alert-heading">
-                <h3>{alert.title}</h3>
-                <Badge tone={alert.category}>{alert.category}</Badge>
-              </div>
-              <p>{alert.recommendedAction}</p>
-              <span>Owner: {alert.owner} · Due {formatDate(alert.dueDate)} · Related: {alert.relatedRecord}</span>
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  )
-}
+function RoadmapView() {
+  const done = buildPlan.filter((item) => item.status === 'Done').length
+  const progress = Math.round((done / buildPlan.length) * 100)
 
-function ActivationPanel() {
   return (
-    <div className="section-stack">
-      <section className="card activation-hero">
+    <div className="dack-roadmap-layout">
+      <section className="dack-briefing">
         <div>
-          <span className="eyebrow">Ready for DACK Data</span>
-          <h2>Platform Preview Using a Working Data Model</h2>
-          <p>
-            Current data is sample data and remains local in this platform preview. The structure is prepared to replace these examples with
-            DACK’s real proposal tracker, resumes, project sheets, rate sheets, active RFPs, reusable content, website inventory, and
-            marketing records.
-          </p>
+          <span className="dack-kicker">Build discipline</span>
+          <h2>Custom DACK platform first. AI as workflow muscle, not the product.</h2>
+          <p>Foundation, permissions, data, ingestion, evidence review, builder, export. This order keeps the system serious.</p>
         </div>
-        <Badge tone="Ready for DACK Data">Ready for DACK Data</Badge>
+        <div className="dack-progress-dial">
+          <strong>{progress}%</strong>
+          <span>foundation path</span>
+        </div>
       </section>
 
-      <section className="card">
-        <CardHeader eyebrow="Activation Checklist" title="Files Needed to Replace Sample Data" />
-        <DataTable
-          headers={['Data Area', 'Files Needed', 'Status', 'Activation Notes']}
-          rows={activationChecklist.map((item) => [
-            <strong>{item.source}</strong>,
-            item.filesNeeded,
-            <Badge tone={item.status}>{item.status}</Badge>,
-            item.notes,
-          ])}
-        />
+      <section className="dack-surface">
+        <SectionHeader eyebrow="Implementation gates" title="What has to happen next" />
+        <div className="dack-build-list">
+          {buildPlan.map((item, index) => (
+            <article className={`dack-build-row ${slug(item.status)}`} key={item.label}>
+              <span className="dack-number">{index + 1}</span>
+              <div>
+                <strong>{item.label}</strong>
+                <small>{item.owner}</small>
+              </div>
+              <Pill tone={item.status}>{item.status}</Pill>
+            </article>
+          ))}
+        </div>
       </section>
     </div>
   )
 }
 
-function InfoTile({ label, value }: { label: string; value: ReactNode }) {
+function AlertCard({ alert }: { alert: { severity: Severity; category: string; title: string; owner: string; dueDate: string; recommendedAction: string } }) {
   return (
-    <div className="info-tile">
+    <article className={`dack-alert-card ${slug(alert.severity)}`}>
+      <div>
+        <span>{alert.category}</span>
+        <strong>{alert.title}</strong>
+        <p>{alert.recommendedAction}</p>
+      </div>
+      <div>
+        <Pill tone={alert.severity}>{alert.severity}</Pill>
+        <small>{alert.owner} · {formatDate(alert.dueDate)}</small>
+      </div>
+    </article>
+  )
+}
+
+function Info({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="dack-info">
       <span>{label}</span>
       <strong>{value}</strong>
     </div>
   )
 }
 
-function Panel({
+function RecordPanel({
   title,
+  icon: Icon,
   children,
   items,
-  emphasis = false,
   ordered = false,
+  tone = 'neutral',
 }: {
   title: string
+  icon: LucideIcon
   children?: ReactNode
   items?: string[]
-  emphasis?: boolean
   ordered?: boolean
+  tone?: string
 }) {
-  const ListTag = ordered ? 'ol' : 'ul'
+  const List = ordered ? 'ol' : 'ul'
   return (
-    <div className={emphasis ? 'panel emphasis' : 'panel'}>
-      <h3>{title}</h3>
-      {children}
-      {items && (
-        <ListTag>
+    <article className={`dack-record-panel ${slug(tone)}`}>
+      <header>
+        <Icon size={17} aria-hidden="true" />
+        <h3>{title}</h3>
+      </header>
+      {items ? (
+        <List>
           {items.map((item) => (
             <li key={item}>{item}</li>
           ))}
-        </ListTag>
-      )}
-    </div>
+        </List>
+      ) : children}
+    </article>
   )
 }
 
-function ChecklistPanel({ title, items }: { title: string; items: { item: string; status: Readiness; owner: string }[] }) {
+function Checklist({ title, items }: { title: string; items: { item: string; status: string; owner: string }[] }) {
   return (
-    <div className="panel">
-      <h3>{title}</h3>
-      <div className="checklist-list">
+    <article className="dack-record-panel">
+      <header>
+        <FileCheck2 size={17} aria-hidden="true" />
+        <h3>{title}</h3>
+      </header>
+      <div className="dack-checklist">
         {items.map((item) => (
-          <article key={item.item}>
-            <ReadinessBadge status={item.status} />
-            <div>
-              <strong>{item.item}</strong>
-              <span>Owner: {item.owner}</span>
-            </div>
-          </article>
+          <div key={item.item}>
+            <span><Check size={14} aria-hidden="true" /></span>
+            <p>{item.item}</p>
+            <Pill tone={item.status}>{item.status}</Pill>
+            <small>{item.owner}</small>
+          </div>
         ))}
       </div>
-    </div>
+    </article>
   )
 }
 
-function TeamPanel({ title, team }: { title: string; team: { name: string; role: string; fit: number; reason: string }[] }) {
-  return (
-    <div className="panel">
-      <h3>{title}</h3>
-      <div className="mini-records">
-        {team.map((member) => (
-          <article key={member.name}>
-            <strong>{member.name}</strong>
-            <span>{member.role} · {member.fit}% fit</span>
-            <p>{member.reason}</p>
-          </article>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function TagGroup({ label, tags }: { label: string; tags: string[] }) {
-  return (
-    <div className="tag-group">
-      <span>{label}</span>
-      <div>
-        {tags.map((tag) => (
-          <Badge key={tag}>{tag}</Badge>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function DataTable({ headers, rows }: { headers: string[]; rows: ReactNode[][] }) {
-  return (
-    <div className="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            {headers.map((header) => (
-              <th key={header}>{header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <td key={`${rowIndex}-${cellIndex}`}>{cell}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
-export default function CommandCenter() {
-  const [activeSection, setActiveSection] = useState<SectionKey>('roadmap')
-  const activeNav = useMemo(
-    () => navigation.find((item) => item.id === activeSection) ?? navigation[0],
-    [activeSection],
-  )
-
-  return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-box">DACK</div>
-          <div>
-            <strong>Proposal Command Center</strong>
-            <span>Marketing workspace</span>
-          </div>
-        </div>
-        <div className="workspace-status">
-          <span>Live workspace</span>
-          <strong>12 modules mapped</strong>
-        </div>
-        <nav aria-label="Primary navigation">
-          {navigation.map((item) => {
-            const Icon = item.icon
-            return (
-              <button className={item.id === activeSection ? 'nav-item active' : 'nav-item'} key={item.id} type="button" onClick={() => setActiveSection(item.id)}>
-                <Icon size={18} aria-hidden="true" />
-                <span>{item.label}</span>
-              </button>
-            )
-          })}
-        </nav>
-        <div className="sidebar-note">
-          <PanelLeft size={18} aria-hidden="true" />
-          <span>Working Data Model structured for DACK proposal, rate, resume, project, and marketing files.</span>
-        </div>
-      </aside>
-
-      <main className="main-panel">
-        <header className="topbar">
-          <div>
-            <span className="eyebrow">DACK Consulting Solutions</span>
-            <h1>{activeNav.label}</h1>
-            <p>{subtitles[activeSection]}</p>
-          </div>
-          <div className="topbar-actions">
-            <div className="search-control">
-              <Search size={16} aria-hidden="true" />
-              <span>Search pursuits, staff, rates, forms, project sheets</span>
-            </div>
-            <Link className="toolbar-button amber" href="/report-automation">
-              <Bot size={16} aria-hidden="true" />
-              Report automation
-            </Link>
-            <button className="toolbar-button" type="button">
-              <UploadCloud size={16} aria-hidden="true" />
-              Import RFP
-            </button>
-            <button className="toolbar-button primary" type="button">
-              <Plus size={16} aria-hidden="true" />
-              New proposal
-            </button>
-          </div>
-        </header>
-
-        <div className="content">
-          {activeSection === 'executive' && <ExecutiveCommandCenter />}
-          {activeSection === 'roadmap' && <EnterpriseBuildChecklist />}
-          {activeSection === 'rfp' && <RfpWorkspace />}
-          {activeSection === 'assembly' && <ProposalAssemblyRoom />}
-          {activeSection === 'staffing' && <StaffingIntelligence />}
-          {activeSection === 'projects' && <ProjectSheetMatching />}
-          {activeSection === 'pricing' && <PricingIntelligence />}
-          {activeSection === 'memory' && <AgencyAndTeamingMemory />}
-          {activeSection === 'marketing' && <MarketingOperations />}
-          {activeSection === 'actions' && <AlertsActionCenter />}
-          {activeSection === 'activation' && <ActivationPanel />}
-        </div>
-      </main>
-    </div>
-  )
-}
+export default CommandCenter
